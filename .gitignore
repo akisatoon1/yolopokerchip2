@@ -1,0 +1,22 @@
+# pythonの仮想環境
+.venv
+
+__pycache__
+
+# pythonスクリプトに渡すための環境変数を定義
+env.sh
+
+# yoloの学習結果を永続的に保存するディレクトリ
+pastData
+
+# yoloの学習結果を一時的に保存するディレクトリ
+runs
+
+# データセットを保存するディレクトリ
+dataset
+
+# ログファイル
+*.log
+
+# yoloの重みファイル
+*.pt
