@@ -25,5 +25,6 @@ if [[ $# -eq 0 ]]; then
     exit 1
 else
     echo "実行するPythonスクリプト: $1"
-    python "$1"
+    echo "引数: ${@:2}"
+    python "$1" "${@:2}"
 fi
