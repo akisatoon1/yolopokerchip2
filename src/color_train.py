@@ -28,6 +28,7 @@ def main():
         name="show-color-preds",
         model=best_model,
         imgs_dir=join(dataset.location, "valid", "images"),
+        box_or_seg="seg",
     )
 
 

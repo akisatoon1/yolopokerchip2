@@ -1,8 +1,6 @@
 import logging
 from os import makedirs, path
 
-import cv2
-
 logging.basicConfig(
     filename="save_errors.log",
     level=logging.ERROR,
@@ -12,21 +10,29 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def save_pred_imgs(results):
+def save_pred_imgs(results, box_or_seg):
     """学習済みモデルの推論を行った画像のインスタンスセグメンテーションを可視化して保存する。"""
     for result in results:
         filename = path.basename(result.path)
         saved_path = path.join(result.save_dir, "pred_imgs", filename)
         makedirs(path.dirname(saved_path), exist_ok=True)
         try:
-            save_pred_img(result, saved_path)
-        except OSError as e:
-            logger.error(f"Failed to save result: {e}")
+            save_pred_img(result, saved_path, box_or_seg)
+        except ValueError as e:
+            logger.error(f"Invalid argument for box_or_seg: {e}")
 
 
-def save_pred_img(result, save_path):
+def save_pred_img(result, save_path, box_or_seg):
     """bounding boxを描画せず, instanceごとに異なる色でmaskを描画した画像を保存する。"""
-    im_bgr = result.plot(color_mode="instance", boxes=False, labels=False)
-    ok = cv2.imwrite(save_path, im_bgr)
-    if not ok:
-        raise OSError(f"保存に失敗しました: {save_path}")
+    if box_or_seg == "box":
+        result.plot(save=True, filename=save_path, boxes=True)
+    elif box_or_seg == "seg":
+        result.plot(
+            save=True,
+            filename=save_path,
+            color_mode="instance",
+            boxes=False,
+            labels=False,
+        )
+    else:
+        raise ValueError(f"box_or_seg の引数が間違っています. box_or_seg={box_or_seg}")

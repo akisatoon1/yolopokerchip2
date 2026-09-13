@@ -49,6 +49,7 @@ def fintune_and_evaluate(freeze):
         name=f"show-finetuned-preds-{freeze}",
         model=model,
         imgs_dir=path.join(test_dataset.location, "valid", "images"),
+        box_or_seg="seg",
     )
 
 

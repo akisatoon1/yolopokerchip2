@@ -19,6 +19,7 @@ def main():
         name="show-box",
         model=model_best,
         imgs_dir=join(dataset.location, "test", "images"),
+        box_or_seg="box",
     )
 
 

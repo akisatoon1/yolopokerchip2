@@ -39,11 +39,13 @@ def main():
         name="show-val-predictions",
         model=model_best,
         imgs_dir=os.path.join(pretrained_dataset.location, "valid", "images"),
+        box_or_seg="seg",
     )
     utils.show_predictions(
         name="show-mytask-predictions",
         model=model_best,
         imgs_dir=os.path.join(test_dataset.location, "valid", "images"),
+        box_or_seg="seg",
     )
 
 

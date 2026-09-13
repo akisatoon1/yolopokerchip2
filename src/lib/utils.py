@@ -52,7 +52,7 @@ def evaluate(name, model, dataset_dir, split="test"):
     save_counts_from_result(results, dataset_dir, split_dir=split_dir)
 
 
-def show_predictions(name, model, imgs_dir, conf=0.25, iou=0.7):
+def show_predictions(name, model, imgs_dir, box_or_seg, conf=0.25, iou=0.7):
     """学習済みモデルの推論を行い、結果を保存する。
 
     デフォルトの推論結果の画像がわかりづらいため。
@@ -67,4 +67,4 @@ def show_predictions(name, model, imgs_dir, conf=0.25, iou=0.7):
         save_txt=True,
         save_conf=True,
     )
-    save_pred_imgs(results)
+    save_pred_imgs(results=results, box_or_seg=box_or_seg)
