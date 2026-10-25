@@ -26,6 +26,7 @@ python仮想環境にて行う.
 export ROBOFLOW_API_KEY="example"
 export ROBOFLOW_WORKSPACE="example"
 export ROBOFLOW_PROJECT="example"
+export WANDB_API_KEY="example"
 ```
 
 ## ssh接続が切れてもプログラムを回し続ける

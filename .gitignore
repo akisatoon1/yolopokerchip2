@@ -20,3 +20,5 @@ dataset
 
 # yoloの重みファイル
 *.pt
+# wandbのローカルログ
+wandb

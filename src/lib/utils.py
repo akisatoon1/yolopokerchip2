@@ -50,6 +50,7 @@ def evaluate(name, model, dataset_dir, split="test"):
     # 現状のデータセットでは, splitがvalのときデータはvalid/に保存されるため
     split_dir = "valid" if split == "val" else split
     save_counts_from_result(results, dataset_dir, split_dir=split_dir)
+    return results
 
 
 def show_predictions(name, model, imgs_dir, box_or_seg, conf=0.25, iou=0.7):
