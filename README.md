@@ -6,27 +6,18 @@
 ソースコードのみを残してこちらのリポジトリに引き継いだ.
 
 ## 開発環境について
-python仮想環境にて行う. 
+python仮想環境を使う. 
 
-### 作成
-`python -m venv .venv`
-
-### 起動, 終了
-起動: `source .venv/bin/activate`
-
-終了: `deactivate`
-
-## 依存パッケージのインストール
-仮想環境を起動してから行う.
-
-`pip install -r requirements.txt`
+`shell/setup_new_runpod.sh` を実行せよ.
 
 ## 環境変数の設定
-```
-export ROBOFLOW_API_KEY="example"
-export ROBOFLOW_WORKSPACE="example"
-export ROBOFLOW_PROJECT="example"
-export WANDB_API_KEY="example"
+`shell/env.sh` にて環境変数の設定をすること.
+
+``` env.sh
+# env.sh の例
+
+#! /usr/bin/env bash
+export API_KEY="example"
 ```
 
 ## ssh接続が切れてもプログラムを回し続ける
