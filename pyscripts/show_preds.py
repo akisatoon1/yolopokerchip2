@@ -1,5 +1,30 @@
 """
-モデルの予測結果を可視化して画像を保存するスクリプト.
+学習済みモデルで画像フォルダを推論し, 予測結果を可視化した画像を保存するスクリプト.
+
+ultralytics 標準の描画は見づらいため, box なら bounding box 付き,
+seg ならインスタンスごとに色分けしたマスクのみ (box・ラベルなし) で描画する.
+推論時の画像サイズ・デバイスは環境変数 IMAGE_SIZE / DEVICE (shell/env.sh) の値を使う.
+
+使い方 (リポジトリのルートで実行):
+    bash shell/run_pyscript.sh pyscripts/show_preds.py <weights_path> <imgs_dir> <box|seg> \\
+        [--name NAME] [--conf CONF] [--iou IOU]
+
+例:
+    bash shell/run_pyscript.sh pyscripts/show_preds.py \\
+        runs/segment/pretrained/weights/best.pt dataset/pokerchip-v3/valid/images seg \\
+        --name show-valid --conf 0.3 --iou 0.5
+
+引数:
+    weights_path  学習済みモデルの重みファイル (.pt) のパス
+    imgs_dir      推論する画像が入ったディレクトリ
+    box_or_seg    描画方法. box (bounding box を描画) / seg (マスクを描画)
+    --name        出力先ディレクトリの名前 (デフォルト tmp)
+    --conf        信頼度の閾値 (デフォルト 0.25)
+    --iou         NMS の IoU 閾値 (デフォルト 0.7)
+
+出力 (runs/<task>/<name>/ 以下. task は segment / detect. 同名が既にあれば name2, name3, ...):
+    pred_imgs/    可視化した予測画像
+    labels/       予測結果の txt (YOLO 形式 + conf)
 """
 
 import argparse

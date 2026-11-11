@@ -1,3 +1,32 @@
+"""
+事前学習用データセットで YOLO を学習し, 評価・予測の可視化を行い, 結果を wandb に記録するスクリプト.
+
+処理の流れ:
+    1. Roboflow から事前学習用 (ROBOFLOW_PRETRAINED_PROJECT) と
+       自分のタスク用 (ROBOFLOW_TEST_PROJECT) のデータセットをダウンロード
+    2. YOLO_MODEL を初期重みとして事前学習用データで学習 (name=pretrained)
+    3. best.pt を評価
+         - 事前学習用データの valid (name=val-pretrained. DEVICE=cuda のときのみ)
+         - 自分のタスク用データの valid (name=val-mytask)
+    4. 両データセットの valid/images を推論し, マスクを描画した画像を保存
+       (name=show-val-predictions, show-mytask-predictions)
+    5. 学習の経過と評価指標を wandb の project "yoloPokerchip" (run 名 pretrained) に記録
+
+学習の設定 (YOLO_MODEL, EPOCHS, IMAGE_SIZE, DEVICE など) はすべて
+shell/env.sh の環境変数で指定する. コマンドライン引数はない.
+事前に `wandb login` しておくこと.
+
+使い方 (リポジトリのルートで実行):
+    bash shell/run_pyscript.sh pyscripts/training.py
+
+出力 (runs/segment/ 以下):
+    pretrained/               学習結果 (weights/best.pt など)
+    val-pretrained/           事前学習用データでの評価結果 (counts.csv など)
+    val-mytask/               自分のタスク用データでの評価結果 (counts.csv など)
+    show-val-predictions/     事前学習用データの valid 画像の予測 (pred_imgs/, labels/)
+    show-mytask-predictions/  自分のタスク用データの valid 画像の予測 (pred_imgs/, labels/)
+"""
+
 import os
 
 import wandb
