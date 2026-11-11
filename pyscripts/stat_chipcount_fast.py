@@ -1,6 +1,7 @@
-"""stat_chipcount.py の高速版。
+"""iou / conf を総当たりして、チップ枚数の完全一致率をヒートマップにするスクリプト.
 
-元の実装は iou ごとに model.predict() を回すため推論が iou_grid の数(19回)だけ走る。
+旧 stat_chipcount.py の高速版で、結果は旧実装と一致することを検証済み。
+旧実装は iou ごとに model.predict() を回すため推論が iou_grid の数(19回)だけ走る。
 iou が影響するのは後段の NMS だけなので、
   1. iou=1.0 (= 何も抑制しない) で推論を1回だけ行い、NMS 前の候補ボックスを保持
   2. 各 iou で torchvision の batched_nms を掛け直し、各 conf で枚数を数える
@@ -39,16 +40,60 @@ import argparse
 from os import path
 from pathlib import Path
 
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
+import seaborn as sns
 import torch
 from torchvision.ops import batched_nms
 from ultralytics import YOLO
 
 from lib.count_chips import count_lines_from_txt, save_csv_from_counts
-from stat_chipcount import PREFIX, exact_rate, save_heatmap
+
+PREFIX = "runs/segment"
 
 IOU_GRID = [round(0.05 * i, 2) for i in range(1, 20)]  # 0.05 ~ 0.95
 CONF_GRID = [0.01, 0.02, 0.03] + IOU_GRID
+
+
+def exact_rate(counts_data):
+    """
+    counts_data: list of (filename, correct_count, pred_count)
+    予測枚数が正解枚数と完全一致した画像の割合を返す。
+    """
+    if len(counts_data) == 0:
+        return np.nan
+    correct = sum(1 for (_, true, pred) in counts_data if pred == true)
+    return correct / len(counts_data)
+
+
+def save_heatmap(table, out_path):
+    """正答率テーブル(行=iou, 列=conf)をヒートマップ画像として保存し、best を返す。"""
+    plt.figure(
+        figsize=(max(8, len(table.columns) * 0.5), max(6, len(table.index) * 0.5))
+    )
+    ax = sns.heatmap(
+        table.astype(float),
+        annot=True,
+        fmt=".2f",
+        cmap="viridis",
+        vmin=0.0,
+        vmax=1.0,
+        cbar_kws={"label": "exact count accuracy"},
+    )
+    ax.set_xlabel("conf")
+    ax.set_ylabel("iou")
+    ax.set_title("Exact count accuracy over conf / iou")
+    plt.tight_layout()
+    plt.savefig(out_path, dpi=150)
+    plt.close()
+
+    best_iou = table.max(axis=1).idxmax()
+    best_conf = table.loc[best_iou].idxmax()
+    best_rate = table.loc[best_iou, best_conf]
+    print(f"BEST: iou={best_iou} conf={best_conf} accuracy={best_rate:.3f}")
+    print(f"saved: {out_path}")
+    return best_iou, best_conf, best_rate
 
 
 def collect_candidates(model, images_dir, imgsz, device):
