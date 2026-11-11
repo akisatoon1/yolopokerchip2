@@ -1,3 +1,19 @@
+"""iou / conf を総当たりして、チップ枚数の完全一致率をヒートマップにするスクリプト.
+
+使い方 (リポジトリのルートで実行):
+    bash shell/run_pyscript.sh pyscripts/stat_chipcount.py --weights <重み> --data <dir>
+
+引数:
+    --weights  学習済みモデルの重みファイル (.pt) のパス
+    --data     評価に使う split ディレクトリ (images/ と labels/ を含む)
+    --imgsz    推論時の画像サイズ (デフォルト 1280)
+    --device   cpu (デフォルト) / 0 (GPU)
+    --project  出力先の名前 (デフォルト iou-conf-search)
+
+出力: runs/segment/<project>/heatmap.png など
+"""
+
+import argparse
 from os import path
 
 import matplotlib.pyplot as plt
@@ -22,7 +38,7 @@ def exact_rate(counts_data):
     return correct / len(counts_data)
 
 
-def predict(project, weights_path, evaluated_dir, imgsz):
+def predict(project, weights_path, evaluated_dir, imgsz, device):
     model = YOLO(weights_path)
 
     iou_grid = [round(x, 2) for x in np.arange(0.05, 0.96, 0.05)]
@@ -40,7 +56,7 @@ def predict(project, weights_path, evaluated_dir, imgsz):
             source=path.join(evaluated_dir, "images"),
             exist_ok=True,
             imgsz=imgsz,
-            device="cpu",
+            device=device,
             save_txt=True,
             save_conf=True,
             conf=0.01,
@@ -91,12 +107,16 @@ def save_heatmap(table, out_path):
 
 
 def main():
-    project = "iou-conf-search"
-    weights_path = "pastData/sizes/training2-for-imgsz-1280/training-online-dataset-2/weights/best.pt"
-    evaluated_dir = "dataset/chips-counter-color-anws5-1ujue/valid"
-    imgsz = 1280
-    table = predict(project, weights_path, evaluated_dir, imgsz)
-    save_heatmap(table, out_path=f"{PREFIX}/{project}/heatmap.png")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--weights", required=True, help="学習済みモデルの重み (.pt)")
+    parser.add_argument("--data", required=True, help="images/ と labels/ を含むdir")
+    parser.add_argument("--imgsz", type=int, default=1280)
+    parser.add_argument("--device", default="cpu")
+    parser.add_argument("--project", default="iou-conf-search")
+    args = parser.parse_args()
+
+    table = predict(args.project, args.weights, args.data, args.imgsz, args.device)
+    save_heatmap(table, out_path=f"{PREFIX}/{args.project}/heatmap.png")
 
 
 if __name__ == "__main__":
