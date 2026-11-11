@@ -20,6 +20,9 @@ else
     exit 1
 fi
 
+# pyscripts/ 配下のスクリプトから src/lib を import できるようにする
+export PYTHONPATH="${SCRIPT_DIR}/../src${PYTHONPATH:+:${PYTHONPATH}}"
+
 if [[ $# -eq 0 ]]; then
     echo "Usage: $0 <python_script>"
     exit 1

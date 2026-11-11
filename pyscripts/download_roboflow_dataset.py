@@ -5,10 +5,10 @@ Roboflow のデータセットをプロジェクト名とバージョンを指�
 DATASET_ROOT/<project_name>-v<version_n> に保存される.
 
 使い方:
-    shell/run_pyscript.sh src/download_roboflow_dataset.py <project_name> <version_n>
+    shell/run_pyscript.sh pyscripts/download_roboflow_dataset.py <project_name> <version_n>
 
 例:
-    shell/run_pyscript.sh src/download_roboflow_dataset.py pokerchip 3
+    shell/run_pyscript.sh pyscripts/download_roboflow_dataset.py pokerchip 3
 """
 
 import argparse
