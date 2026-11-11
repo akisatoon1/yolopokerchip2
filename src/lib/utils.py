@@ -53,10 +53,13 @@ def evaluate(name, model, dataset_dir, split="test"):
     return results
 
 
-def show_predictions(name, model, imgs_dir, box_or_seg, conf=0.25, iou=0.7):
+def show_predictions(
+    name, model, imgs_dir, box_or_seg, conf=0.25, iou=0.7, color_mode=None
+):
     """学習済みモデルの推論を行い、結果を保存する。
 
     デフォルトの推論結果の画像がわかりづらいため。
+    color_mode は "class" / "instance" / None (box_or_seg ごとのデフォルト)。
     """
     results = model.predict(
         name=name,
@@ -68,4 +71,4 @@ def show_predictions(name, model, imgs_dir, box_or_seg, conf=0.25, iou=0.7):
         save_txt=True,
         save_conf=True,
     )
-    save_pred_imgs(results=results, box_or_seg=box_or_seg)
+    save_pred_imgs(results=results, box_or_seg=box_or_seg, color_mode=color_mode)

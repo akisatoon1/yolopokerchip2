@@ -2,12 +2,13 @@
 学習済みモデルで画像フォルダを推論し, 予測結果を可視化した画像を保存するスクリプト.
 
 ultralytics 標準の描画は見づらいため, box なら bounding box 付き,
-seg ならインスタンスごとに色分けしたマスクのみ (box・ラベルなし) で描画する.
+seg ならマスクのみ (box・ラベルなし) で描画する.
+色分けはデフォルトでクラスごと (同じクラスは同じ色, 違うクラスは違う色).
 推論時の画像サイズ・デバイスは環境変数 IMAGE_SIZE / DEVICE (shell/env.sh) の値を使う.
 
 使い方 (リポジトリのルートで実行):
     bash shell/run_pyscript.sh pyscripts/show_preds.py <weights_path> <imgs_dir> <box|seg> \\
-        [--name NAME] [--conf CONF] [--iou IOU]
+        [--name NAME] [--conf CONF] [--iou IOU] [--color-mode {class,instance}]
 
 例:
     bash shell/run_pyscript.sh pyscripts/show_preds.py \\
@@ -21,6 +22,8 @@ seg ならインスタンスごとに色分けしたマスクのみ (box・ラ�
     --name        出力先ディレクトリの名前 (デフォルト tmp)
     --conf        信頼度の閾値 (デフォルト 0.25)
     --iou         NMS の IoU 閾値 (デフォルト 0.7)
+    --color-mode  色分けの方法. class (同じクラスは同じ色) / instance (インスタンスごとに別の色)
+                  (デフォルト class)
 
 出力 (runs/<task>/<name>/ 以下. task は segment / detect. 同名が既にあれば name2, name3, ...):
     pred_imgs/    可視化した予測画像
@@ -41,6 +44,7 @@ def main():
     parser.add_argument("--name", default="tmp")
     parser.add_argument("--conf", type=float, default=0.25)
     parser.add_argument("--iou", type=float, default=0.7)
+    parser.add_argument("--color-mode", choices=["class", "instance"], default="class")
     args = parser.parse_args()
 
     model = YOLO(args.weights_path)
@@ -51,6 +55,7 @@ def main():
         box_or_seg=args.box_or_seg,
         conf=args.conf,
         iou=args.iou,
+        color_mode=args.color_mode,
     )
 
 
